@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app" id="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <a href="#" class="brand"><i data-lucide="warehouse" class="i"></i><strong>Acme Inc.</strong></a>
+      </div>
+
+      <nav class="sidebar-content">
+        <div class="nav-group">
+          <p class="nav-label">Home</p>
+          <a href="#" class="nav-item" data-nav="dashboard"><i data-lucide="layout-dashboard" class="i"></i><span>Dashboard</span></a>
+          <a href="#" class="nav-item active" aria-current="page" data-view="inventory"><i data-lucide="package" class="i"></i><span>Inventory</span></a>
+          <a href="#" class="nav-item" data-nav="orders"><i data-lucide="shopping-cart" class="i"></i><span>Orders</span></a>
+          <a href="#" class="nav-item" data-nav="suppliers"><i data-lucide="truck" class="i"></i><span>Suppliers</span></a>
+          <a href="#" class="nav-item" data-nav="team"><i data-lucide="users" class="i"></i><span>Team</span></a>
+        </div>
+        <div class="nav-group">
+          <p class="nav-label">Warehouse</p>
+          <a href="#" class="nav-item"><i data-lucide="database" class="i"></i><span>Stock Counts</span><i data-lucide="ellipsis" class="i more"></i></a>
+          <a href="#" class="nav-item"><i data-lucide="arrow-left-right" class="i"></i><span>Transfers</span></a>
+          <a href="#" class="nav-item"><i data-lucide="clipboard-list" class="i"></i><span>Purchase Orders</span></a>
+          <a href="#" class="nav-item"><i data-lucide="chart-column" class="i"></i><span>Reports</span></a>
+          <a href="#" class="nav-item"><i data-lucide="ellipsis" class="i"></i><span>More</span></a>
+        </div>
+        <div class="nav-group">
+          <p class="nav-label">System</p>
+          <a href="#" class="nav-item" data-view="settings"><i data-lucide="settings" class="i"></i><span>Settings</span></a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="user" type="button">
+          <span class="avatar">JD</span>
+          <span class="user-text"><strong>John Doe</strong><small>john@acme.com</small></span>
+          <i data-lucide="ellipsis" class="i"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main -->
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn" id="sidebarToggle" aria-label="Toggle sidebar"><i data-lucide="panel-left" class="i"></i></button>
+        <span class="separator"></span>
+        <h1 class="page-title" id="pageTitle">Inventory</h1>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+            <i data-lucide="sun" class="i icon-sun"></i><i data-lucide="moon" class="i icon-moon"></i>
+          </button>
+          <button class="btn btn-blue" id="quickCreate"><i data-lucide="circle-plus" class="i"></i>Quick Create</button>
+        </div>
+      </header>
+
+      <main class="content" id="viewInventory">
+        <!-- KPI cards -->
+        <section class="grid stats" id="stats" aria-label="Summary"></section>
+
+        <!-- Chart -->
+        <section class="card chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>Stock Movement</h2>
+              <p class="muted" id="chartSub">Units received and shipped for the last 3 months</p>
+            </div>
+            <div class="segmented" id="range" role="group" aria-label="Date range">
+              <button data-range="3m" class="on">Last 3 months</button>
+              <button data-range="30d">Last 30 days</button>
+              <button data-range="7d">Last 7 days</button>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <span><i class="dot d1"></i>Received</span>
+            <span><i class="dot d2"></i>Shipped</span>
+          </div>
+          <div class="chart-wrap" id="chartWrap">
+            <div class="tooltip" id="tooltip" hidden></div>
+          </div>
+        </section>
+
+        <!-- Table -->
+        <section class="table-section">
+          <div class="table-bar">
+            <div class="tabs" id="tabs" role="tablist">
+              <button class="tab active" data-tab="all" role="tab">All <span class="count" data-count="all"></span></button>
+              <button class="tab" data-tab="in" role="tab">In Stock <span class="count" data-count="in"></span></button>
+              <button class="tab" data-tab="low" role="tab">Low Stock <span class="count" data-count="low"></span></button>
+              <button class="tab" data-tab="out" role="tab">Out of Stock <span class="count" data-count="out"></span></button>
+            </div>
+            <div class="bar-actions">
+              <div class="field-search">
+                <i data-lucide="search" class="i"></i>
+                <input type="search" id="search" placeholder="Search..." aria-label="Search products" />
+              </div>
+              <div class="menu-anchor">
+                <button class="btn btn-outline btn-sm" id="colsBtn" aria-haspopup="true"><i data-lucide="panel-left" class="i"></i>Customize Columns<i data-lucide="chevron-down" class="i"></i></button>
+                <div class="menu" id="colsMenu" hidden></div>
+              </div>
+              <button class="btn btn-outline btn-sm" id="addBtn"><i data-lucide="plus" class="i"></i>Add Product</button>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table id="table">
+                <thead>
+                  <tr>
+                    <th class="w-grip"></th>
+                    <th class="w-chk"><input type="checkbox" class="chk" id="selectAll" aria-label="Select all rows on page" /></th>
+                    <th data-col="name"><button class="sort" data-key="name">Product<i></i></button></th>
+                    <th data-col="category">Category</th>
+                    <th data-col="status">Status</th>
+                    <th data-col="qty" class="right"><button class="sort" data-key="qty">Qty<i></i></button></th>
+                    <th data-col="reorder" class="right"><button class="sort" data-key="reorder">Reorder<i></i></button></th>
+                    <th data-col="price" class="right"><button class="sort" data-key="price">Price<i></i></button></th>
+                    <th data-col="location">Location</th>
+                    <th class="w-act"></th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+              <p class="empty" id="empty" hidden>No products match your filters.</p>
+            </div>
+          </div>
+
+          <div class="table-footer">
+            <span class="muted" id="selInfo"></span>
+            <div class="pager">
+              <label class="rows-per">Rows per page
+                <select id="pageSize" class="select select-sm"><option>5</option><option selected>8</option><option>10</option><option>20</option></select>
+              </label>
+              <span id="pageInfo"></span>
+              <div class="pager-btns">
+                <button class="icon-btn bordered" id="first" aria-label="First page"><i data-lucide="chevrons-left" class="i"></i></button>
+                <button class="icon-btn bordered" id="prev" aria-label="Previous page"><i data-lucide="chevron-left" class="i"></i></button>
+                <button class="icon-btn bordered" id="next" aria-label="Next page"><i data-lucide="chevron-right" class="i"></i></button>
+                <button class="icon-btn bordered" id="last" aria-label="Last page"><i data-lucide="chevrons-right" class="i"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Settings view -->
+      <main class="content settings" id="viewSettings" hidden>
+        <div class="settings-wrap">
+          <h2 class="settings-title">Settings</h2>
+
+          <form class="s-section" id="profileForm" novalidate>
+            <div class="s-side">
+              <h3>Profile</h3>
+              <p class="muted">This is how others will see you on the site.</p>
+            </div>
+            <div class="s-fields">
+              <div class="s-field">
+                <label for="username">Username</label>
+                <p class="muted">This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.</p>
+                <input id="username" class="s-input" type="text" placeholder="calebporzio" autocomplete="off" maxlength="20" />
+                <small class="error" id="usernameErr"></small>
+              </div>
+              <div class="s-field">
+                <label for="email">Primary email</label>
+                <div class="select-wrap">
+                  <select id="email" class="s-input">
+                    <option value="">Select primary email...</option>
+                    <option>john@acme.com</option>
+                    <option>john.doe@warehouse.acme.com</option>
+                    <option>inventory@acme.com</option>
+                  </select>
+                  <i data-lucide="chevrons-up-down" class="i"></i>
+                </div>
+                <p class="muted">You can manage verified email addresses in your email settings.</p>
+              </div>
+              <div class="s-field">
+                <label for="bio">Bio</label>
+                <textarea id="bio" class="s-input" rows="4" maxlength="240" placeholder="Tell us a little bit about yourself"></textarea>
+                <p class="muted">You can @mention other users and organizations to link to them.</p>
+              </div>
+              <div class="s-actions"><button type="submit" class="btn btn-primary">Save profile</button></div>
+            </div>
+          </form>
+
+          <form class="s-section" id="prefForm">
+            <div class="s-side">
+              <h3>Preferences</h3>
+              <p class="muted">Customize your layout and notification preferences.</p>
+            </div>
+            <div class="s-fields">
+              <div class="s-field">
+                <label>Sidebar</label>
+                <p class="muted">Select the items you want to display in the sidebar.</p>
+                <div class="checks" id="navChecks">
+                  <label class="check"><input type="checkbox" class="chk" value="dashboard" checked />Dashboard</label>
+                  <label class="check"><input type="checkbox" class="chk" value="orders" checked />Orders</label>
+                  <label class="check"><input type="checkbox" class="chk" value="suppliers" checked />Suppliers</label>
+                  <label class="check"><input type="checkbox" class="chk" value="team" checked />Team</label>
+                </div>
+              </div>
+              <div class="s-field">
+                <label for="rowsSel">Rows per page</label>
+                <p class="muted">Default number of products shown in the inventory table.</p>
+                <div class="select-wrap">
+                  <select id="rowsSel" class="s-input"><option>5</option><option>8</option><option>10</option><option>20</option></select>
+                  <i data-lucide="chevrons-up-down" class="i"></i>
+                </div>
+              </div>
+              <div class="s-field">
+                <label>Notifications</label>
+                <p class="muted">Choose when we should email you about stock.</p>
+                <div class="checks">
+                  <label class="check"><input type="checkbox" class="chk" id="notifyLow" />Email me when an item reaches its reorder level</label>
+                  <label class="check"><input type="checkbox" class="chk" id="notifyWeekly" />Send me a weekly stock summary</label>
+                </div>
+              </div>
+              <div class="s-field">
+                <label for="themeSel">Appearance</label>
+                <p class="muted">Select the theme for the dashboard.</p>
+                <div class="select-wrap">
+                  <select id="themeSel" class="s-input"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+                  <i data-lucide="chevrons-up-down" class="i"></i>
+                </div>
+              </div>
+              <div class="s-actions"><button type="submit" class="btn btn-primary">Save preferences</button></div>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Row action menu -->
+  <div class="menu menu-float" id="rowMenu" hidden>
+    <button data-act="edit">Edit</button>
+    <button data-act="copy">Make a copy</button>
+    <button data-act="fav" id="favAct">Favorite</button>
+    <div class="menu-sep"></div>
+    <button data-act="delete" class="danger">Delete</button>
+  </div>
+
+  <!-- Add / Edit modal -->
+  <dialog id="productModal" class="modal" aria-labelledby="modalTitle">
+    <form id="productForm" method="dialog" novalidate>
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Add product</h2>
+          <p class="muted small" id="modalDesc">Fill in the details below, then save.</p>
+        </div>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x" class="i"></i></button>
+      </div>
+      <div class="modal-body form-grid">
+        <label class="field span-2"><span>Product name</span><input name="name" type="text" required maxlength="80" placeholder="e.g. Wireless Mouse" /><small class="error"></small></label>
+        <label class="field"><span>SKU</span><input name="sku" type="text" required maxlength="24" placeholder="e.g. WM-1001" /><small class="error"></small></label>
+        <label class="field"><span>Category</span>
+          <select name="category" required>
+            <option value="">Select...</option><option>Electronics</option><option>Accessories</option><option>Furniture</option><option>Office</option><option>Storage</option>
+          </select><small class="error"></small></label>
+        <label class="field"><span>Quantity</span><input name="qty" type="number" min="0" step="1" required placeholder="0" /><small class="error"></small></label>
+        <label class="field"><span>Reorder level</span><input name="reorder" type="number" min="0" step="1" required placeholder="10" /><small class="error"></small></label>
+        <label class="field"><span>Unit price ($)</span><input name="price" type="number" min="0" step="0.01" required placeholder="0.00" /><small class="error"></small></label>
+        <label class="field"><span>Location</span><input name="location" type="text" required maxlength="20" placeholder="e.g. A-12" /><small class="error"></small></label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save product</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Delete confirm modal -->
+  <dialog id="deleteModal" class="modal modal-sm" aria-labelledby="delTitle">
+    <div class="modal-header">
+      <div>
+        <h2 id="delTitle">Delete product?</h2>
+        <p class="muted small" id="delText"></p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" data-close>Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toasts" aria-live="polite"></div>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
